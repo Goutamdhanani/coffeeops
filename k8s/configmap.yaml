@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coffeeops-config
+  namespace: coffeeops
+data:
+  ENV: "production"

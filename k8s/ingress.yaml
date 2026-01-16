@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coffeeops-ingress
+  namespace: coffeeops
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: coffeeops-strip-api-prefix@kubernetescrd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: coffeeops-backend
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: coffeeops-frontend
+                port:
+                  number: 80

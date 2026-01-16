@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>CoffeeOps</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#0f0f0f; color:#eee; }
+    header { padding: 20px; background:#141414; position: sticky; top:0; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .card { background:#181818; padding:16px; border-radius:12px; margin: 12px 0; }
+    button { padding:10px 14px; border:0; border-radius:10px; cursor:pointer; }
+    .btn { background:#d39b5d; color:#111; font-weight:bold; }
+    .row { display:flex; gap:12px; flex-wrap: wrap; align-items:center; }
+    input { padding:10px; border-radius:10px; border:1px solid #333; background:#0d0d0d; color:#eee; width:90px; }
+    .small { opacity:.8; font-size: 13px; }
+    code { background:#111; padding:2px 6px; border-radius:6px; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h2>☕ CoffeeOps</h2>
+    <div class="small">Frontend + FastAPI backend on Kubernetes (k3s) with CI/CD</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="row">
+      <button class="btn" onclick="loadMenu()">Load Menu</button>
+      <span id="status" class="small">Status: idle</span>
+    </div>
+  </div>
+
+  <div id="menu"></div>
+
+  <div class="card">
+    <h3>Order</h3>
+    <div class="row">
+      <label>Item ID</label>
+      <input id="itemId" value="1"/>
+      <label>Qty</label>
+      <input id="qty" value="1"/>
+      <button class="btn" onclick="placeOrder()">Place Order</button>
+    </div>
+    <pre id="orderResult" class="small"></pre>
+  </div>
+
+  <div class="card small">
+    API base: <code>/api</code> (Ingress routes to backend)
+  </div>
+</div>
+
+<script>
+  const statusEl = document.getElementById("status");
+  const menuEl = document.getElementById("menu");
+  const orderResultEl = document.getElementById("orderResult");
+
+  async function loadMenu() {
+    statusEl.textContent = "Status: loading menu...";
+    try {
+      const r = await fetch("/api/menu");
+      const data = await r.json();
+      menuEl.innerHTML = data.menu.map(x => `
+        <div class="card">
+          <div class="row">
+            <div style="flex:1">
+              <b>${x.name}</b><div class="small">₹${x.price}</div>
+            </div>
+            <div class="small">ID: ${x.id}</div>
+          </div>
+        </div>
+      `).join("");
+      statusEl.textContent = "Status: menu loaded ✅";
+    } catch (e) {
+      statusEl.textContent = "Status: failed ❌";
+    }
+  }
+
+  async function placeOrder() {
+    statusEl.textContent = "Status: placing order...";
+    orderResultEl.textContent = "";
+    try {
+      const item_id = parseInt(document.getElementById("itemId").value);
+      const qty = parseInt(document.getElementById("qty").value);
+
+      const r = await fetch("/api/order", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ item_id, qty })
+      });
+      const data = await r.json();
+      orderResultEl.textContent = JSON.stringify(data, null, 2);
+      statusEl.textContent = "Status: order done ✅";
+    } catch (e) {
+      statusEl.textContent = "Status: order failed ❌";
+    }
+  }
+</script>
+</body>
+</html>
