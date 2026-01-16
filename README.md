@@ -87,26 +87,4 @@ This repo deploys itself. Like it should.
 
 ---
 
-## What I’d upgrade next
-
-* immutable image tags (commit SHA) instead of `latest`
-* rollback support + deployment history
-* monitoring dashboard (Prometheus/Grafana)
-
-````
-
----
-
-## Why this is better
-- Not long
-- Not fake “enterprise”
-- It shows **proof** and **what matters**
-- It reads like a real engineer, not a tutorial bot
-
----
-
-
-
-
-````
 
