@@ -1,5 +1,6 @@
 
 # CoffeeOps ☕️
+![CoffeeOps](./docs/screenshot.png)
 **FastAPI + Static UI on Kubernetes (k3s) with CI/CD + security scanning**
 
 **Live:** http://64.227.133.210/  
@@ -108,6 +109,6 @@ This repo deploys itself. Like it should.
 
 
 
-```md
-![CoffeeOps](./docs/screenshot.png)
+
 ````
+
