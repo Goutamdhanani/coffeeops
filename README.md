@@ -5,8 +5,6 @@
 
 **Live:** http://64.227.133.210/  
 **API:** http://64.227.133.210/api/menu  
-**Version:** http://64.227.133.210/api/version  
-
 ![Frontend CI/CD](https://github.com/Goutamdhanani/coffeeops/actions/workflows/frontend-ci-cd.yml/badge.svg)
 ![Backend CI/CD](https://github.com/Goutamdhanani/coffeeops/actions/workflows/backend-ci-cd.yml/badge.svg)
 
