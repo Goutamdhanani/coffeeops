@@ -3,13 +3,26 @@ name: Frontend CI/CD
 on:
   push:
     branches: ["main"]
+    paths:
+      - "frontend/**"
+      - "k8s/frontend.yaml"
+      - "k8s/ingress.yaml"
+      - "k8s/traefik-middleware.yaml"
 
 jobs:
   build_scan_push_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Debug list files
+        run: |
+          pwd
+          ls -la
+          ls -la k8s || true
+          ls -la frontend || true
 
       - name: Login DockerHub
         uses: docker/login-action@v3
@@ -18,20 +31,23 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build frontend image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/coffeeops-frontend:latest frontend
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/coffeeops-frontend:latest frontend
 
-      - name: Trivy scan frontend image
+      - name: Trivy scan frontend image (fail on HIGH/CRITICAL)
         uses: aquasecurity/trivy-action@0.24.0
         with:
           image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/coffeeops-frontend:latest
           format: table
           exit-code: 1
           severity: HIGH,CRITICAL
+          vuln-type: os,library
 
       - name: Push frontend image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/coffeeops-frontend:latest
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/coffeeops-frontend:latest
 
-      - name: Deploy to k3s droplet
+      - name: Deploy to droplet (k3s) via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -39,8 +55,13 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             set -e
+
+            cd ~/coffeeops
+            git pull origin main
+
             kubectl apply -f k8s/frontend.yaml
             kubectl apply -f k8s/traefik-middleware.yaml
             kubectl apply -f k8s/ingress.yaml
+
             kubectl rollout restart deployment coffeeops-frontend -n coffeeops
             kubectl rollout status deployment coffeeops-frontend -n coffeeops --timeout=120s
