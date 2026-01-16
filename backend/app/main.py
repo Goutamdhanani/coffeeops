@@ -30,3 +30,4 @@ def order(order: Order):
         return {"ok": False, "error": "Item not found"}
     total = item["price"] * order.qty
     return {"ok": True, "env": env, "item": item["name"], "qty": order.qty, "total": total}
+# trigger
