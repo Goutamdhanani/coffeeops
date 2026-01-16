@@ -3,11 +3,6 @@ name: Frontend CI/CD
 on:
   push:
     branches: ["main"]
-    paths:
-      - "frontend/**"
-      - "k8s/frontend.yaml"
-      - "k8s/ingress.yaml"
-      - "k8s/traefik-middleware.yaml"
 
 jobs:
   build_scan_push_deploy:

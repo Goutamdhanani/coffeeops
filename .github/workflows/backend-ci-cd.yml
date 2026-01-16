@@ -3,13 +3,6 @@ name: Backend CI/CD
 on:
   push:
     branches: ["main"]
-    paths:
-      - "backend/**"
-      - "k8s/backend.yaml"
-      - "k8s/configmap.yaml"
-      - "k8s/namespace.yaml"
-      - "k8s/ingress.yaml"
-      - "k8s/traefik-middleware.yaml"
 
 jobs:
   build_scan_push_deploy:
